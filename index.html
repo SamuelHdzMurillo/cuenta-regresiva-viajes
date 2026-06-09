@@ -2,160 +2,241 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuenta Regresiva</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            color: #f8fafc;
-        }
-
-        p.subtitle {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            margin-bottom: 40px;
-        }
-
-        .countdown-container {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .time-box {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 16px;
-            min-width: 120px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-
-        .time-box:hover {
-            transform: translateY(-5px);
-            border-color: #6366f1;
-        }
-
-        .number {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #6366f1;
-            display: block;
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-
-        .label {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #cbd5e1;
-        }
-
-        #message {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #10b981;
-            display: none;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 600px) {
-            h1 { font-size: 1.8rem; }
-            .time-box { min-width: 90px; padding: 15px; }
-            .number { font-size: 2.2rem; }
-            .label { font-size: 0.7rem; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a1628">
+    <meta name="description" content="Cuenta regresiva inmersiva para tus vacaciones soñadas">
+    <title>✈ Cuenta Regresiva · Vacaciones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <h1>Faltan muy poco</h1>
-    <p class="subtitle">Cuenta regresiva para el 17 de Julio</p>
+    <!-- Capas de escena con parallax -->
+    <div class="scene" id="scene">
+        <div class="layer layer-sky" data-depth="0.02"></div>
+        <div class="aurora" aria-hidden="true">
+            <div class="aurora-band aurora-1"></div>
+            <div class="aurora-band aurora-2"></div>
+            <div class="aurora-band aurora-3"></div>
+        </div>
+        <div class="layer layer-stars" data-depth="0.03" id="starsLayer"></div>
+        <div class="layer layer-sun" data-depth="0.05" id="celestialBody">
+            <div class="sun-glow"></div>
+            <div class="sun-core"></div>
+        </div>
+        <div class="layer layer-clouds" data-depth="0.08">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+            <div class="cloud cloud-4"></div>
+            <div class="cloud cloud-5"></div>
+        </div>
+        <canvas id="oceanCanvas" class="layer-ocean" aria-hidden="true"></canvas>
+        <div class="layer layer-palms" data-depth="0.15">
+            <div class="palm palm-left">
+                <div class="trunk"></div>
+                <div class="fronds">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="palm palm-right">
+                <div class="trunk"></div>
+                <div class="fronds">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+        <div class="layer layer-seagulls" data-depth="0.12" id="seagullsLayer"></div>
+        <div class="volumetric-light light-1" aria-hidden="true"></div>
+        <div class="volumetric-light light-2" aria-hidden="true"></div>
+    </div>
 
-    <div class="countdown-container" id="countdown">
-        <div class="time-box">
-            <span class="number" id="days">00</span>
-            <span class="label">Días</span>
+    <!-- Partículas flotantes -->
+    <canvas id="particlesCanvas" aria-hidden="true"></canvas>
+
+    <!-- Efectos especiales -->
+    <canvas id="effectsCanvas" aria-hidden="true"></canvas>
+
+    <!-- Overlay de imagen de fondo personalizada -->
+    <div class="custom-bg" id="customBg"></div>
+    <div class="scene-overlay"></div>
+
+    <!-- Contenido principal -->
+    <main class="main-content" id="mainContent">
+        <header class="hero-header">
+            <div class="badge glass-neo">
+                <span class="badge-icon">✈</span>
+                <span id="destinationLabel">Maldivas · Resort de Lujo</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line">Tu viaje</span>
+                <span class="title-accent" id="heroAccent">soñado</span>
+                <span class="title-line">está cada vez más cerca</span>
+            </h1>
+            <p class="hero-subtitle" id="heroSubtitle">Cuenta regresiva para el <strong id="dateDisplay">17 de Julio</strong></p>
+        </header>
+
+        <!-- Cuenta regresiva -->
+        <section class="countdown-section" id="countdownSection" aria-label="Cuenta regresiva">
+            <div class="countdown-grid" id="countdown">
+                <div class="time-block glass-neo" data-unit="days">
+                    <div class="flip-container">
+                        <div class="flip-inner">
+                            <span class="flip-number" id="days" data-value="00">00</span>
+                        </div>
+                    </div>
+                    <span class="time-label">Días</span>
+                    <div class="time-glow"></div>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-block glass-neo" data-unit="hours">
+                    <div class="flip-container">
+                        <div class="flip-inner">
+                            <span class="flip-number" id="hours" data-value="00">00</span>
+                        </div>
+                    </div>
+                    <span class="time-label">Horas</span>
+                    <div class="time-glow"></div>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-block glass-neo" data-unit="minutes">
+                    <div class="flip-container">
+                        <div class="flip-inner">
+                            <span class="flip-number" id="minutes" data-value="00">00</span>
+                        </div>
+                    </div>
+                    <span class="time-label">Minutos</span>
+                    <div class="time-glow"></div>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-block glass-neo" data-unit="seconds">
+                    <div class="flip-container">
+                        <div class="flip-inner">
+                            <span class="flip-number" id="seconds" data-value="00">00</span>
+                        </div>
+                    </div>
+                    <span class="time-label">Segundos</span>
+                    <div class="time-glow"></div>
+                </div>
+            </div>
+            <div class="milestone-msg" id="milestoneMsg" aria-live="polite"></div>
+        </section>
+
+        <!-- Controles rápidos -->
+        <nav class="quick-actions" aria-label="Acciones rápidas">
+            <button class="action-btn glass-neo" id="btnSettings" title="Configuración" aria-label="Abrir configuración">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </button>
+            <button class="action-btn glass-neo" id="btnMusic" title="Música" aria-label="Reproducir música">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </button>
+            <button class="action-btn glass-neo" id="btnParty" title="Modo fiesta" aria-label="Modo fiesta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l4-4 4 4-4 4-4-4zM16 8l2 2-2 2M20 4v4M20 12h-4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
+            </button>
+            <button class="action-btn glass-neo" id="btnRelax" title="Modo relajante" aria-label="Modo relajante">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 3"/></svg>
+            </button>
+            <button class="action-btn glass-neo" id="btnShare" title="Compartir" aria-label="Compartir">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51L15.42 17.49M15.41 6.51L8.59 10.49"/></svg>
+            </button>
+            <button class="action-btn glass-neo" id="btnCapture" title="Captura" aria-label="Tomar captura">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
+            </button>
+        </nav>
+    </main>
+
+    <!-- Reproductor de audio -->
+    <aside class="audio-player glass-neo" id="audioPlayer" aria-label="Reproductor de audio">
+        <div class="player-header">
+            <span class="player-title">Ambiente</span>
+            <button class="player-close" id="closePlayer" aria-label="Cerrar reproductor">&times;</button>
         </div>
-        <div class="time-box">
-            <span class="number" id="hours">00</span>
-            <span class="label">Horas</span>
+        <div class="track-info">
+            <span class="track-name" id="trackName">Olas del Mar</span>
+            <span class="track-icon" id="trackIcon">🌊</span>
         </div>
-        <div class="time-box">
-            <span class="number" id="minutes">00</span>
-            <span class="label">Minutos</span>
+        <div class="player-controls">
+            <button class="player-btn" id="prevTrack" aria-label="Pista anterior">⏮</button>
+            <button class="player-btn player-btn-main" id="playPause" aria-label="Reproducir o pausar">▶</button>
+            <button class="player-btn" id="nextTrack" aria-label="Pista siguiente">⏭</button>
         </div>
-        <div class="time-box">
-            <span class="number" id="seconds">00</span>
-            <span class="label">Segundos</span>
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" id="volumeSlider" min="0" max="100" value="40" aria-label="Volumen">
+        </div>
+        <ul class="track-list" id="trackList"></ul>
+    </aside>
+
+    <!-- Panel de configuración -->
+    <aside class="settings-panel glass-neo" id="settingsPanel" aria-label="Configuración">
+        <div class="panel-header">
+            <h2>Personaliza tu viaje</h2>
+            <button class="panel-close" id="closeSettings" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="panel-body">
+            <label class="field">
+                <span>Destino</span>
+                <input type="text" id="inputDestination" placeholder="Ej: Maldivas, Bali...">
+            </label>
+            <label class="field">
+                <span>Fecha de vacaciones</span>
+                <input type="date" id="inputDate">
+            </label>
+            <label class="field">
+                <span>Imagen de fondo (URL)</span>
+                <input type="url" id="inputBgImage" placeholder="https://...">
+            </label>
+            <div class="field">
+                <span>Tema visual</span>
+                <div class="theme-grid" id="themeGrid">
+                    <button class="theme-btn active" data-theme="tropical">🌴 Tropical</button>
+                    <button class="theme-btn" data-theme="sunset">🌅 Atardecer</button>
+                    <button class="theme-btn" data-theme="neon">💜 Neón</button>
+                    <button class="theme-btn" data-theme="aurora">🌌 Aurora</button>
+                    <button class="theme-btn" data-theme="gold">✨ Dorado</button>
+                </div>
+            </div>
+            <div class="field toggles">
+                <label class="toggle">
+                    <input type="checkbox" id="toggleParty">
+                    <span>Modo fiesta</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="toggleRelax">
+                    <span>Modo relajante</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="toggleDayNight" checked>
+                    <span>Ciclo día/noche</span>
+                </label>
+            </div>
+            <button class="save-btn" id="saveSettings">Guardar cambios</button>
+        </div>
+    </aside>
+    <div class="panel-backdrop" id="panelBackdrop"></div>
+
+    <!-- Celebración épica día 0 -->
+    <div class="celebration-overlay" id="celebrationOverlay" aria-hidden="true">
+        <canvas id="celebrationCanvas"></canvas>
+        <div class="celebration-content">
+            <div class="celebration-badge">🎉 🏝️ 🎉</div>
+            <h2 class="celebration-title">¡LAS VACACIONES</h2>
+            <h2 class="celebration-title accent">HAN COMENZADO!</h2>
+            <p class="celebration-sub" id="celebrationDest">Disfruta cada segundo en Maldivas</p>
+            <button class="celebration-btn glass-neo" id="celebrationShare">Compartir la alegría 🚀</button>
         </div>
     </div>
 
-    <div id="message">¡Ha llegado el día! 🎉</div>
+    <!-- Toast notifications -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <script>
-        function getTargetDate() {
-            const currentYear = new Date().getFullYear();
-            let targetDate = new Date(`July 17, ${currentYear} 00:00:00`).getTime();
-            const now = new Date().getTime();
-
-            // Si el 17 de julio de este año ya pasó, apunta al del próximo año automáticamente
-            if (targetDate < now) {
-                targetDate = new Date(`July 17, ${currentYear + 1} 00:00:00`).getTime();
-            }
-            return targetDate;
-        }
-
-        const countDownDate = getTargetDate();
-
-        const x = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countDownDate - now;
-
-            // Cálculos de tiempo para días, horas, minutos y segundos
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Muestra el resultado en los elementos correspondientes con formato de dos dígitos
-            document.getElementById("days").innerHTML = days < 10 ? "0" + days : days;
-            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
-
-            // Si la cuenta regresiva termina
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("countdown").style.display = "none";
-                document.getElementById("message").style.display = "block";
-            }
-        }, 1000);
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="js/audio.js" defer></script>
+    <script src="js/effects.js" defer></script>
+    <script src="js/background.js" defer></script>
+    <script src="js/countdown.js" defer></script>
+    <script src="js/app.js" defer></script>
 </body>
 </html>
