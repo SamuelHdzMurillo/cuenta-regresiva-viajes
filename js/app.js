@@ -143,6 +143,10 @@ const App = (() => {
         });
     }
 
+    function onIntroComplete() {
+        Countdown.start();
+    }
+
     function init() {
         localStorage.removeItem('vacationCountdownSettings');
         applyTrip();
@@ -162,7 +166,8 @@ const App = (() => {
             }
         };
 
-        Countdown.start();
+        CinematicIntro.onComplete = onIntroComplete;
+        CinematicIntro.init();
     }
 
     return { init, shareCountdown, captureScreen, showToast };

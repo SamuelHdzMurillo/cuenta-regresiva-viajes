@@ -66,7 +66,6 @@ const Background = (() => {
             ctx.fill();
         }
 
-        // Reflejo del sol/luna en el agua
         const shimmerX = w * 0.5 + parallaxX * 20;
         const shimmerGrad = ctx.createLinearGradient(shimmerX - 30, 0, shimmerX + 30, h);
         shimmerGrad.addColorStop(0, 'rgba(255, 215, 0, 0)');
@@ -139,7 +138,7 @@ const Background = (() => {
     }
 
     function startDayNightCycle() {
-        const cycleDuration = 120000; // 2 minutos ciclo completo (demo acelerado)
+        const cycleDuration = 120000;
 
         function updateCycle() {
             if (!dayNightEnabled) return;

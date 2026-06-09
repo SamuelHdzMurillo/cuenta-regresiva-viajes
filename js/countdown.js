@@ -8,7 +8,6 @@ const Countdown = (() => {
     let onComplete = null;
     let onTick = null;
 
-    const UNITS = ['days', 'hours', 'minutes', 'seconds'];
     const MILESTONES = [
         { days: 30, msg: '🌴 ¡Solo 30 días! El paraíso te espera', class: 'milestone-30' },
         { days: 15, msg: '🎆 ¡15 días! La emoción crece', class: 'milestone-15' },

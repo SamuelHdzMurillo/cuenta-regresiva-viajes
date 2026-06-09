@@ -5,6 +5,7 @@ const AudioPlayer = (() => {
     let audioCtx = null;
     let masterGain = null;
     let currentNodes = [];
+    let introNodes = [];
     let isPlaying = false;
     let currentTrack = 0;
     let volume = 0.4;
@@ -40,6 +41,16 @@ const AudioPlayer = (() => {
             } catch (_) { /* noop */ }
         });
         currentNodes = [];
+    }
+
+    function stopIntro() {
+        introNodes.forEach(node => {
+            try {
+                if (node.stop) node.stop();
+                node.disconnect();
+            } catch (_) { /* noop */ }
+        });
+        introNodes = [];
     }
 
     function createNoise(duration, filterFreq, filterQ, gain) {
@@ -82,6 +93,51 @@ const AudioPlayer = (() => {
         gainNode.connect(masterGain);
         osc.start();
         return [osc, gainNode];
+    }
+
+    function playIntroSequence() {
+        ensureContext();
+        stopIntro();
+
+        const rumble = createNoise(6, 80, 2, 0.2);
+        introNodes.push(...rumble);
+        const rumbleGain = rumble[2];
+        if (rumbleGain) {
+            rumbleGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            rumbleGain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 1.5);
+            rumbleGain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 3.5);
+            rumbleGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 6);
+        }
+
+        setTimeout(stopIntro, 7000);
+    }
+
+    function playExplosion() {
+        ensureContext();
+
+        const bufferSize = audioCtx.sampleRate * 2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.3));
+        }
+
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 1.5);
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+        source.start();
     }
 
     function playTrack(index) {
@@ -244,18 +300,12 @@ const AudioPlayer = (() => {
         document.getElementById('volumeSlider')?.addEventListener('input', (e) => {
             setVolume(parseInt(e.target.value, 10));
         });
-        document.getElementById('closePlayer')?.addEventListener('click', () => {
-            document.getElementById('audioPlayer')?.classList.remove('open');
-        });
     }
 
     function playFestive() {
         playTrack(3);
         if (masterGain) masterGain.gain.value = Math.min(volume * 1.5, 1);
     }
-
-    function getCurrentTrack() { return currentTrack; }
-    function setCurrentTrack(index) { currentTrack = index; }
 
     return {
         init,
@@ -266,8 +316,8 @@ const AudioPlayer = (() => {
         prevTrack,
         setVolume,
         playFestive,
-        getCurrentTrack,
-        setCurrentTrack,
+        playIntroSequence,
+        playExplosion,
         TRACKS
     };
 })();

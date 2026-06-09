@@ -11,7 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="intro-active">
+
+    <!-- Intro: explosión al cargar -->
+    <div class="cinematic-intro" id="cinematicIntro" aria-hidden="false">
+        <canvas id="introCanvas"></canvas>
+        <div class="intro-flash" id="introFlash"></div>
+        <div class="intro-skip-hint">Toca para saltar</div>
+    </div>
 
     <!-- Capas de escena con parallax -->
     <div class="scene" id="scene">
@@ -53,17 +60,12 @@
         <div class="volumetric-light light-2" aria-hidden="true"></div>
     </div>
 
-    <!-- Partículas flotantes -->
     <canvas id="particlesCanvas" aria-hidden="true"></canvas>
-
-    <!-- Efectos especiales -->
     <canvas id="effectsCanvas" aria-hidden="true"></canvas>
 
-    <!-- Overlay de imagen de fondo personalizada -->
     <div class="custom-bg" id="customBg"></div>
     <div class="scene-overlay"></div>
 
-    <!-- Contenido principal -->
     <main class="main-content" id="mainContent">
         <header class="hero-header">
             <div class="badge glass-neo">
@@ -78,7 +80,6 @@
             <p class="hero-subtitle" id="heroSubtitle">Cuenta regresiva para el <strong id="dateDisplay">17 de Julio</strong></p>
         </header>
 
-        <!-- Cuenta regresiva -->
         <section class="countdown-section" id="countdownSection" aria-label="Cuenta regresiva">
             <div class="countdown-grid" id="countdown">
                 <div class="time-block glass-neo" data-unit="days">
@@ -124,7 +125,6 @@
             <div class="milestone-msg" id="milestoneMsg" aria-live="polite"></div>
         </section>
 
-        <!-- Controles rápidos -->
         <nav class="quick-actions" aria-label="Acciones rápidas">
             <button class="action-btn glass-neo" id="btnMusic" title="Música" aria-label="Reproducir música">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -144,7 +144,6 @@
         </nav>
     </main>
 
-    <!-- Reproductor de audio -->
     <aside class="audio-player glass-neo" id="audioPlayer" aria-label="Reproductor de audio">
         <div class="player-header">
             <span class="player-title">Ambiente</span>
@@ -166,7 +165,6 @@
         <ul class="track-list" id="trackList"></ul>
     </aside>
 
-    <!-- Celebración épica día 0 -->
     <div class="celebration-overlay" id="celebrationOverlay" aria-hidden="true">
         <canvas id="celebrationCanvas"></canvas>
         <div class="celebration-content">
@@ -178,7 +176,6 @@
         </div>
     </div>
 
-    <!-- Toast notifications -->
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
@@ -186,6 +183,7 @@
     <script src="js/effects.js" defer></script>
     <script src="js/background.js" defer></script>
     <script src="js/countdown.js" defer></script>
+    <script src="js/cinematic-intro.js" defer></script>
     <script src="js/app.js" defer></script>
 </body>
 </html>

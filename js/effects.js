@@ -136,7 +136,6 @@ const Effects = (() => {
 
         effectsCtx.clearRect(0, 0, w, h);
 
-        // Confeti
         confetti = confetti.filter(c => {
             effectsCtx.save();
             effectsCtx.translate(c.x, c.y);
@@ -155,7 +154,6 @@ const Effects = (() => {
             return c.opacity > 0 && c.y < h + 50;
         });
 
-        // Fuegos artificiales
         fireworks = fireworks.filter(f => {
             effectsCtx.beginPath();
             effectsCtx.arc(f.x, f.y, f.size * f.life, 0, Math.PI * 2);
@@ -225,12 +223,10 @@ const Effects = (() => {
             resizeCanvas(celebrationCanvas);
         }
 
-        // Confeti infinito
         setInterval(() => {
             if (celebrationActive) spawnConfetti(15);
         }, 300);
 
-        // Fuegos masivos
         setInterval(() => {
             if (celebrationActive) {
                 spawnFirework(
@@ -276,12 +272,6 @@ const Effects = (() => {
         requestAnimationFrame(animateCelebration);
     }
 
-    function animate() {
-        drawParticles();
-        drawEffects();
-        animFrame = requestAnimationFrame(animate);
-    }
-
     function colorExplosion() {
         for (let i = 0; i < 8; i++) {
             setTimeout(() => {
@@ -293,6 +283,12 @@ const Effects = (() => {
                 spawnConfetti(30);
             }, i * 200);
         }
+    }
+
+    function animate() {
+        drawParticles();
+        drawEffects();
+        animFrame = requestAnimationFrame(animate);
     }
 
     return {
