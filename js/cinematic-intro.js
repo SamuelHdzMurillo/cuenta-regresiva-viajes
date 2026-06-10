@@ -43,9 +43,16 @@ const CinematicIntro = (() => {
         initParticles(80);
         startTime = performance.now();
 
-        if (typeof AudioPlayer !== 'undefined') AudioPlayer.playIntroSequence();
+        try {
+            if (typeof AudioPlayer !== 'undefined') AudioPlayer.playIntroSequence();
+        } catch (e) {
+            console.warn('Intro audio:', e);
+        }
 
-        animate();
+        requestAnimationFrame(() => {
+            resize();
+            animate();
+        });
         setTimeout(() => { if (!completed && !skipped) finish(); }, TIMING.total + 500);
     }
 
@@ -293,8 +300,19 @@ const CinematicIntro = (() => {
         document.body.classList.remove('intro-active');
         introEl?.classList.add('fade-out');
         introEl?.classList.remove('shake-intense');
-        document.getElementById('mainContent')?.classList.add('revealed');
-        document.getElementById('scene')?.classList.add('revealed');
+
+        const main = document.getElementById('mainContent');
+        const scene = document.getElementById('scene');
+        if (main) {
+            main.classList.add('revealed');
+            main.style.opacity = '1';
+            main.style.visibility = 'visible';
+        }
+        if (scene) {
+            scene.classList.add('revealed');
+            scene.style.opacity = '1';
+            scene.style.visibility = 'visible';
+        }
 
         setTimeout(() => {
             if (introEl) {

@@ -94,8 +94,17 @@ body.milestone-1 { --particle-intensity: 3; }
 
 /* Intro: explosión al cargar */
 body.intro-active { overflow: hidden; }
+
+.scene,
+.main-content {
+    opacity: 1;
+}
+
 body.intro-active .main-content,
-body.intro-active .scene { opacity: 0; }
+body.intro-active .scene {
+    opacity: 0;
+    visibility: hidden;
+}
 
 .cinematic-intro {
     position: fixed;
